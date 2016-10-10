@@ -10,8 +10,10 @@ void setup() {
   Serial.print("Connecting to: ");
   Serial.println(ssid);
 
+  // Start tilkobling til trådløst nettverk med ssid og password
   WiFi.begin(ssid, password);
 
+  // Skriv ut "." hvert 0.5 sekund fram til vi er tilkoblet
   while (WiFi.status() != WL_CONNECTED) {
     delay(500);
     Serial.print(".");
@@ -19,6 +21,8 @@ void setup() {
 
   Serial.println("Connected!");  
   Serial.println("IP address: ");
+  
+  // Skriv ut IP-adresse
   Serial.println(WiFi.localIP());
 }
 

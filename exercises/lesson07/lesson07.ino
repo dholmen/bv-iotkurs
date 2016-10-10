@@ -1,6 +1,8 @@
 #include <ESP8266WiFi.h>
 #include <PubSubClient.h>
 
+#define LED_PIN D1
+
 const char* ssid     = "bouvet-iot";
 const char* password = "esp8266kurs";
 
@@ -11,9 +13,24 @@ const int mqtt_port = 1883;
 WiFiClient wifiClient;
 PubSubClient mqttClient(wifiClient);
 
+void callback(char* topic, byte* payload, unsigned int length) {
+  Serial.print("Message arrived [");
+  Serial.print(topic);
+  Serial.print("] ");
+  for (int i = 0; i < length; i++) {
+    Serial.print((char)payload[i]);
+  }
+  Serial.println();
+
+  // Oppgave: Dersom payout starter med '1', skru på LED. Ellers slukk LED.
+}
+
 void setup() {
   Serial.begin(115200);
 
+  pinMode(LED_PIN, OUTPUT);
+  digitalWrite(LED_PIN, LOW);
+  
   Serial.println("");
   Serial.print("Connecting to: ");
   Serial.println(ssid);
@@ -32,6 +49,8 @@ void setup() {
   randomSeed(micros());
 
   mqttClient.setServer(mqtt_broker, mqtt_port);
+
+  // Oppgave: Sett opp callback-funksjonen som callback til PubSubClient-instansen
 }
 
 void reconnect() {
@@ -42,6 +61,9 @@ void reconnect() {
 
     if (mqttClient.connect(clientId.c_str())) {
       Serial.println("connected");
+
+      // Oppgave: Subscribe til "bvkurs/status"
+      
     } else {
       Serial.print("failed, rc=");
       Serial.print(mqttClient.state());
@@ -51,15 +73,11 @@ void reconnect() {
   }
 }
 
-
-
 void loop() {
   if (!mqttClient.connected()) {
     reconnect();
   }
-  
-  mqttClient.publish("random/topic", "hello world");
 
-  delay(5000);
+  // Oppgave: Kjør PubSubClient sin loop for å understøtte subscriptions  
 }
 
